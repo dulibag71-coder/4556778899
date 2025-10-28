@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Navigator - 차량 추적 대시보드</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f5f5f5;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 100px);
+        }
+
+        .sidebar {
+            width: 350px;
+            background: white;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .map-container {
+            flex: 1;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .vehicle-list {
+            padding: 16px;
+        }
+
+        .vehicle-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .vehicle-card:hover {
+            border-color: #2196F3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+        }
+
+        .vehicle-card.active {
+            border-color: #2196F3;
+            background: #E3F2FD;
+        }
+
+        .vehicle-card.online {
+            border-left: 4px solid #4CAF50;
+        }
+
+        .vehicle-card.offline {
+            border-left: 4px solid #9E9E9E;
+        }
+
+        .vehicle-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2196F3;
+            margin-bottom: 8px;
+        }
+
+        .vehicle-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-online {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .status-offline {
+            background: #9E9E9E;
+            color: white;
+        }
+
+        .controls {
+            padding: 16px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .control-group {
+            margin-bottom: 16px;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .control-group input,
+        .control-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1976D2;
+        }
+
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            padding: 16px;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .stat-card {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2196F3;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .vehicle-marker {
+            width: 40px;
+            height: 40px;
+            background: #2196F3;
+            border: 3px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+            min-width: 250px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .info-panel.show {
+            display: block;
+        }
+
+        .info-panel h3 {
+            margin-bottom: 12px;
+            color: #2196F3;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .info-label {
+            color: #666;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .marker-online {
+            animation: pulse 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚗 AI Navigator 차량 추적 시스템</h1>
+        <p>실시간 차량 위치 모니터링 대시보드</p>
+    </div>
+
+    <div class="container">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <!-- 통계 -->
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalVehicles">0</div>
+                    <div class="stat-label">총 차량</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="onlineVehicles">0</div>
+                    <div class="stat-label">온라인</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="movingVehicles">0</div>
+                    <div class="stat-label">주행 중</div>
+                </div>
+            </div>
+
+            <!-- 차량 목록 -->
+            <div class="vehicle-list" id="vehicleList">
+                <p style="text-align: center; color: #999;">차량을 불러오는 중...</p>
+            </div>
+
+            <!-- 컨트롤 -->
+            <div class="controls">
+                <div class="control-group">
+                    <label>차량 번호 추가</label>
+                    <input type="text" id="vehicleNumber" placeholder="예: 12가3456">
+                </div>
+                <div class="control-group">
+                    <label>시뮬레이션 모드</label>
+                    <select id="simMode">
+                        <option value="off">OFF</option>
+                        <option value="random">랜덤 이동</option>
+                        <option value="route">경로 따라가기</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="addVehicle()">차량 추가</button>
+                <button class="btn btn-success" onclick="startSimulation()" style="margin-top: 8px;">시뮬레이션 시작</button>
+            </div>
+        </div>
+
+        <!-- 지도 -->
+        <div class="map-container">
+            <div id="map"></div>
+            <div class="info-panel" id="infoPanel">
+                <h3 id="infoPanelTitle">차량 정보</h3>
+                <div class="info-row">
+                    <span class="info-label">속도:</span>
+                    <span class="info-value" id="infoSpeed">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">방향:</span>
+                    <span class="info-value" id="infoHeading">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">마지막 업데이트:</span>
+                    <span class="info-value" id="infoTimestamp">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">위치:</span>
+                    <span class="info-value" id="infoLocation">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수
+        let map;
+        let socket;
+        let vehicles = new Map();
+        let markers = new Map();
+        let selectedVehicle = null;
+
+        // API 엔드포인트
+        const API_BASE = 'http://localhost:5000/api/v1';
+
+        // 지도 초기화
+        function initMap() {
+            map = L.map('map').setView([37.5665, 126.9780], 12);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            console.log('지도 초기화 완료');
+        }
+
+        // WebSocket 연결
+        function initWebSocket() {
+            socket = io('http://localhost:5000');
+
+            socket.on('connect', () => {
+                console.log('WebSocket 연결됨');
+            });
+
+            socket.on('location:update', (data) => {
+                console.log('위치 업데이트:', data);
+                updateVehicleLocation(data);
+            });
+
+            socket.on('disconnect', () => {
+                console.log('WebSocket 연결 끊김');
+            });
+        }
+
+        // 차량 목록 로드
+        async function loadVehicles() {
+            try {
+                // 데모용 차량 데이터
+                const demoVehicles = [
+                    { id: '1', vehicle_number: '12가3456', model: '현대 아반떼', latitude: 37.5665, longitude: 126.9780, speed: 0 },
+                    { id: '2', vehicle_number: '34나5678', model: '기아 K5', latitude: 37.5565, longitude: 126.9880, speed: 0 },
+                    { id: '3', vehicle_number: '56다7890', model: '테슬라 Model 3', latitude: 37.5765, longitude: 126.9680, speed: 0 },
+                ];
+
+                demoVehicles.forEach(vehicle => {
+                    vehicles.set(vehicle.id, vehicle);
+                    addMarker(vehicle);
+                });
+
+                renderVehicleList();
+                updateStats();
+            } catch (error) {
+                console.error('차량 로드 실패:', error);
+            }
+        }
+
+        // 차량 목록 렌더링
+        function renderVehicleList() {
+            const list = document.getElementById('vehicleList');
+            list.innerHTML = '';
+
+            vehicles.forEach((vehicle, id) => {
+                const isOnline = vehicle.timestamp && (Date.now() - new Date(vehicle.timestamp).getTime()) < 300000;
+                const isMoving = vehicle.speed > 0;
+
+                const card = document.createElement('div');
+                card.className = `vehicle-card ${isOnline ? 'online' : 'offline'} ${selectedVehicle === id ? 'active' : ''}`;
+                card.onclick = () => selectVehicle(id);
+
+                card.innerHTML = `
+                    <div class="vehicle-number">${vehicle.vehicle_number}</div>
+                    <div class="vehicle-info">
+                        <span>${vehicle.model || '모델 정보 없음'}</span>
+                        <span class="status-badge ${isOnline ? 'status-online' : 'status-offline'}">
+                            ${isOnline ? '온라인' : '오프라인'}
+                        </span>
+                    </div>
+                    <div class="vehicle-info">
+                        <span>속도: ${vehicle.speed || 0} km/h</span>
+                        <span>${isMoving ? '주행중' : '정지'}</span>
+                    </div>
+                `;
+
+                list.appendChild(card);
+            });
+        }
+
+        // 마커 추가
+        function addMarker(vehicle) {
+            if (!vehicle.latitude || !vehicle.longitude) return;
+
+            const icon = L.divIcon({
+                className: 'vehicle-marker',
+                html: `<div class="marker-online">${vehicle.vehicle_number.substr(0, 2)}</div>`,
+                iconSize: [40, 40]
+            });
+
+            const marker = L.marker([vehicle.latitude, vehicle.longitude], { icon })
+                .addTo(map)
+                .bindPopup(`
+                    <b>${vehicle.vehicle_number}</b><br>
+                    ${vehicle.model || ''}<br>
+                    속도: ${vehicle.speed || 0} km/h
+                `);
+
+            markers.set(vehicle.id, marker);
+        }
+
+        // 차량 위치 업데이트
+        function updateVehicleLocation(data) {
+            const vehicle = vehicles.get(data.vehicleId);
+            if (!vehicle) return;
+
+            vehicle.latitude = data.latitude;
+            vehicle.longitude = data.longitude;
+            vehicle.speed = data.speed || 0;
+            vehicle.heading = data.heading || 0;
+            vehicle.timestamp = data.timestamp || new Date().toISOString();
+
+            // 마커 업데이트
+            const marker = markers.get(data.vehicleId);
+            if (marker) {
+                marker.setLatLng([data.latitude, data.longitude]);
+                marker.setPopupContent(`
+                    <b>${vehicle.vehicle_number}</b><br>
+                    ${vehicle.model || ''}<br>
+                    속도: ${vehicle.speed} km/h
+                `);
+            }
+
+            // 선택된 차량이면 정보 패널 업데이트
+            if (selectedVehicle === data.vehicleId) {
+                updateInfoPanel(vehicle);
+            }
+
+            renderVehicleList();
+            updateStats();
+        }
+
+        // 차량 선택
+        function selectVehicle(vehicleId) {
+            selectedVehicle = vehicleId;
+            const vehicle = vehicles.get(vehicleId);
+
+            if (vehicle && vehicle.latitude && vehicle.longitude) {
+                map.setView([vehicle.latitude, vehicle.longitude], 16, {
+                    animate: true,
+                    duration: 0.5
+                });
+
+                updateInfoPanel(vehicle);
+            }
+
+            renderVehicleList();
+        }
+
+        // 정보 패널 업데이트
+        function updateInfoPanel(vehicle) {
+            const panel = document.getElementById('infoPanel');
+            panel.classList.add('show');
+
+            document.getElementById('infoPanelTitle').textContent = vehicle.vehicle_number;
+            document.getElementById('infoSpeed').textContent = `${vehicle.speed || 0} km/h`;
+            document.getElementById('infoHeading').textContent = `${vehicle.heading || 0}°`;
+            document.getElementById('infoTimestamp').textContent = vehicle.timestamp ?
+                new Date(vehicle.timestamp).toLocaleString('ko-KR') : '-';
+            document.getElementById('infoLocation').textContent =
+                `${vehicle.latitude.toFixed(4)}, ${vehicle.longitude.toFixed(4)}`;
+        }
+
+        // 통계 업데이트
+        function updateStats() {
+            document.getElementById('totalVehicles').textContent = vehicles.size;
+
+            let online = 0;
+            let moving = 0;
+
+            vehicles.forEach(vehicle => {
+                if (vehicle.timestamp && (Date.now() - new Date(vehicle.timestamp).getTime()) < 300000) {
+                    online++;
+                }
+                if (vehicle.speed > 0) {
+                    moving++;
+                }
+            });
+
+            document.getElementById('onlineVehicles').textContent = online;
+            document.getElementById('movingVehicles').textContent = moving;
+        }
+
+        // 차량 추가
+        function addVehicle() {
+            const vehicleNumber = document.getElementById('vehicleNumber').value.trim();
+            if (!vehicleNumber) {
+                alert('차량 번호를 입력하세요.');
+                return;
+            }
+
+            const newId = String(vehicles.size + 1);
+            const newVehicle = {
+                id: newId,
+                vehicle_number: vehicleNumber,
+                model: '신규 차량',
+                latitude: 37.5665 + (Math.random() - 0.5) * 0.1,
+                longitude: 126.9780 + (Math.random() - 0.5) * 0.1,
+                speed: 0
+            };
+
+            vehicles.set(newId, newVehicle);
+            addMarker(newVehicle);
+            renderVehicleList();
+            updateStats();
+
+            document.getElementById('vehicleNumber').value = '';
+            alert('차량이 추가되었습니다!');
+        }
+
+        // 시뮬레이션 시작
+        let simulationInterval = null;
+
+        function startSimulation() {
+            if (simulationInterval) {
+                clearInterval(simulationInterval);
+                simulationInterval = null;
+                alert('시뮬레이션 중지');
+                return;
+            }
+
+            const mode = document.getElementById('simMode').value;
+            if (mode === 'off') {
+                alert('시뮬레이션 모드를 선택하세요.');
+                return;
+            }
+
+            alert('시뮬레이션 시작! 차량들이 움직입니다.');
+
+            simulationInterval = setInterval(() => {
+                vehicles.forEach((vehicle, id) => {
+                    // 랜덤 이동
+                    const newLat = vehicle.latitude + (Math.random() - 0.5) * 0.001;
+                    const newLng = vehicle.longitude + (Math.random() - 0.5) * 0.001;
+                    const newSpeed = Math.random() * 60;
+
+                    updateVehicleLocation({
+                        vehicleId: id,
+                        latitude: newLat,
+                        longitude: newLng,
+                        speed: newSpeed,
+                        heading: Math.random() * 360,
+                        timestamp: new Date().toISOString()
+                    });
+                });
+            }, 2000); // 2초마다 업데이트
+        }
+
+        // 초기화
+        window.onload = () => {
+            initMap();
+            initWebSocket();
+            loadVehicles();
+        };
+    </script>
+</body>
+</html>
