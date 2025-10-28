@@ -1,0 +1,836 @@
+/* ==========================================
+   AI Navigator - 스타일시트
+   색상: 파란색 계열, 미니멀 & 모던 디자인
+   ========================================== */
+
+/* === 전역 리셋 및 기본 스타일 === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* 색상 변수 */
+    --primary-blue: #2196F3;
+    --deep-blue: #1976D2;
+    --light-blue: #E3F2FD;
+    --accent-blue: #03A9F4;
+    --success-green: #4CAF50;
+    --error-red: #F44336;
+
+    --text-dark: #212121;
+    --text-light: #757575;
+    --background: #FAFAFA;
+    --white: #FFFFFF;
+    --shadow: rgba(0, 0, 0, 0.1);
+
+    /* 간격 */
+    --spacing-xs: 8px;
+    --spacing-s: 12px;
+    --spacing-m: 16px;
+    --spacing-l: 24px;
+    --spacing-xl: 32px;
+    --spacing-xxl: 48px;
+
+    /* 타이포그래피 */
+    --font-title: 24px;
+    --font-heading: 18px;
+    --font-body: 16px;
+    --font-caption: 14px;
+    --font-small: 12px;
+
+    /* 전환 */
+    --transition-fast: 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+    --transition-normal: 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    background-color: var(--background);
+    color: var(--text-dark);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* === 앱 컨테이너 === */
+.app-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* === 화면 공통 스타일 === */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--white);
+    transform: translateX(100%);
+    transition: transform var(--transition-normal);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.screen.active {
+    transform: translateX(0);
+}
+
+.screen.exit-left {
+    transform: translateX(-100%);
+}
+
+/* === 상단 바 === */
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-m);
+    background: var(--white);
+    box-shadow: 0 2px 4px var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.btn-icon {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--text-dark);
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition-fast);
+}
+
+.btn-icon:hover {
+    background: var(--light-blue);
+}
+
+.btn-icon:active {
+    transform: scale(0.95);
+}
+
+.screen-title {
+    font-size: var(--font-heading);
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+/* === 버튼 스타일 === */
+.btn {
+    padding: var(--spacing-m) var(--spacing-l);
+    border: none;
+    border-radius: 8px;
+    font-size: var(--font-body);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: center;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+}
+
+.btn-primary {
+    background: var(--primary-blue);
+    color: var(--white);
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+}
+
+.btn-primary:hover {
+    background: var(--deep-blue);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.btn-secondary {
+    background: var(--white);
+    color: var(--primary-blue);
+    border: 2px solid var(--primary-blue);
+}
+
+.btn-secondary:hover {
+    background: var(--light-blue);
+}
+
+.btn-secondary:active {
+    transform: scale(0.98);
+}
+
+.btn-large {
+    height: 56px;
+    font-size: var(--font-heading);
+}
+
+/* ========================================
+   화면 1: 시작 화면 (Splash)
+   ======================================== */
+
+#screen-splash {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(135deg, #E3F2FD 0%, #FFFFFF 100%);
+}
+
+.splash-content {
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xxl);
+}
+
+.logo-container {
+    text-align: center;
+    animation: fadeInDown 0.6s ease-out;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.logo-icon {
+    margin-bottom: var(--spacing-l);
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.app-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: var(--spacing-xs);
+}
+
+.app-subtitle {
+    font-size: var(--font-body);
+    color: var(--text-light);
+}
+
+.vehicle-input-section {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    animation: fadeInUp 0.6s ease-out 0.2s backwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.input-label {
+    font-size: var(--font-caption);
+    color: var(--text-light);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.vehicle-input {
+    width: 100%;
+    padding: var(--spacing-m);
+    border: 2px solid var(--light-blue);
+    border-radius: 8px;
+    font-size: var(--font-heading);
+    text-align: center;
+    font-weight: 600;
+    color: var(--text-dark);
+    transition: all var(--transition-fast);
+}
+
+.vehicle-input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.1);
+}
+
+.vehicle-input::placeholder {
+    color: var(--text-light);
+    font-weight: 400;
+}
+
+.splash-footer {
+    margin-top: auto;
+    text-align: center;
+}
+
+.version-info {
+    font-size: var(--font-small);
+    color: var(--text-light);
+}
+
+/* ========================================
+   화면 2: 지도 화면 (Map)
+   ======================================== */
+
+#screen-map {
+    padding: 0;
+}
+
+.vehicle-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-m);
+}
+
+.vehicle-number-display {
+    font-size: var(--font-body);
+    font-weight: 700;
+    color: var(--primary-blue);
+    background: var(--light-blue);
+    padding: var(--spacing-xs) var(--spacing-m);
+    border-radius: 20px;
+}
+
+.gps-indicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--font-small);
+    color: var(--success-green);
+}
+
+.speed-display {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.speed-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary-blue);
+}
+
+.speed-unit {
+    font-size: var(--font-small);
+    color: var(--text-light);
+}
+
+.map-container {
+    width: 100%;
+    height: calc(100vh - 60px - 200px);
+    background: var(--light-blue);
+    position: relative;
+}
+
+.floating-btn {
+    position: absolute;
+    bottom: 220px;
+    right: var(--spacing-m);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--white);
+    color: var(--primary-blue);
+    border: none;
+    box-shadow: 0 4px 12px var(--shadow);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+    z-index: 10;
+}
+
+.floating-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px var(--shadow);
+}
+
+.floating-btn:active {
+    transform: scale(0.95);
+}
+
+.bottom-card {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border-radius: 24px 24px 0 0;
+    padding: var(--spacing-l);
+    box-shadow: 0 -4px 16px var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+}
+
+.follow-mode-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-m);
+}
+
+.follow-mode-info h3 {
+    font-size: var(--font-body);
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+
+.follow-mode-info p {
+    font-size: var(--font-caption);
+    color: var(--text-light);
+}
+
+/* 토글 스위치 */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: var(--transition-fast);
+    border-radius: 28px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: var(--transition-fast);
+    border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background-color: var(--accent-blue);
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+}
+
+/* ========================================
+   화면 3: 내비게이션 화면 (Navigation)
+   ======================================== */
+
+.route-input-section {
+    padding: var(--spacing-l);
+    background: var(--white);
+}
+
+.location-input-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-m);
+    padding: var(--spacing-m) 0;
+}
+
+.location-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.location-icon.start {
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.location-icon.destination {
+    background: rgba(244, 67, 54, 0.1);
+}
+
+.location-input-wrapper {
+    flex: 1;
+}
+
+.location-label {
+    font-size: var(--font-small);
+    color: var(--text-light);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.location-input {
+    width: 100%;
+    border: none;
+    font-size: var(--font-body);
+    color: var(--text-dark);
+    font-weight: 500;
+    padding: 0;
+}
+
+.location-input:focus {
+    outline: none;
+}
+
+.location-input::placeholder {
+    color: var(--text-light);
+}
+
+.location-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--light-blue), transparent);
+    margin: var(--spacing-xs) 0;
+}
+
+.map-preview {
+    width: 100%;
+    height: 250px;
+    background: var(--light-blue);
+    margin-bottom: var(--spacing-l);
+}
+
+.route-options {
+    padding: 0 var(--spacing-l) var(--spacing-l);
+}
+
+.section-title {
+    font-size: var(--font-body);
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: var(--spacing-m);
+}
+
+.option-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-s);
+}
+
+.option-btn {
+    padding: var(--spacing-m) var(--spacing-s);
+    border: 2px solid var(--light-blue);
+    background: var(--white);
+    border-radius: 8px;
+    font-size: var(--font-caption);
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.option-btn:hover {
+    border-color: var(--primary-blue);
+    background: var(--light-blue);
+}
+
+.option-btn.active {
+    border-color: var(--primary-blue);
+    background: var(--primary-blue);
+    color: var(--white);
+}
+
+.option-btn svg {
+    color: inherit;
+}
+
+.route-info-card {
+    padding: var(--spacing-l);
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+}
+
+.route-stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: var(--spacing-l);
+    background: var(--light-blue);
+    border-radius: 12px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.stat-label {
+    font-size: var(--font-small);
+    color: var(--text-light);
+}
+
+.stat-value {
+    font-size: var(--font-heading);
+    font-weight: 700;
+    color: var(--primary-blue);
+}
+
+.stat-divider {
+    width: 1px;
+    height: 40px;
+    background: rgba(33, 150, 243, 0.2);
+}
+
+/* ========================================
+   화면 4: 결과 화면 (Summary)
+   ======================================== */
+
+.summary-content {
+    padding: var(--spacing-xxl) var(--spacing-l);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-l);
+    min-height: 100vh;
+}
+
+.success-icon {
+    animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.summary-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-dark);
+    text-align: center;
+}
+
+.summary-subtitle {
+    font-size: var(--font-body);
+    color: var(--text-light);
+    text-align: center;
+    margin-top: calc(var(--spacing-xs) * -1);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-m);
+    width: 100%;
+    max-width: 500px;
+}
+
+.stat-card {
+    background: var(--white);
+    border: 2px solid var(--light-blue);
+    border-radius: 12px;
+    padding: var(--spacing-l);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-m);
+    transition: all var(--transition-fast);
+}
+
+.stat-card:hover {
+    border-color: var(--primary-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.stat-card .stat-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--light-blue);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-card .stat-info {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-card .stat-label {
+    font-size: var(--font-caption);
+    color: var(--text-light);
+}
+
+.stat-card .stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary-blue);
+}
+
+.summary-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    width: 100%;
+    max-width: 400px;
+    margin-top: var(--spacing-l);
+}
+
+/* ========================================
+   로딩 오버레이
+   ======================================== */
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-l);
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-normal);
+}
+
+.loading-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: var(--white);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-text {
+    color: var(--white);
+    font-size: var(--font-body);
+    font-weight: 600;
+}
+
+/* ========================================
+   반응형 디자인
+   ======================================== */
+
+@media (max-width: 768px) {
+    .app-title {
+        font-size: 28px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 375px) {
+    :root {
+        --spacing-l: 16px;
+        --spacing-xl: 24px;
+    }
+
+    .app-title {
+        font-size: 24px;
+    }
+
+    .option-buttons {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ========================================
+   지도 스타일 (Leaflet 커스터마이징)
+   ======================================== */
+
+.leaflet-container {
+    font-family: inherit;
+}
+
+.leaflet-popup-content-wrapper {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.leaflet-popup-content {
+    margin: var(--spacing-m);
+    font-size: var(--font-caption);
+}
+
+.leaflet-control-zoom {
+    border: none !important;
+    box-shadow: 0 2px 8px var(--shadow) !important;
+}
+
+.leaflet-control-zoom a {
+    color: var(--primary-blue) !important;
+    border-radius: 4px !important;
+}
