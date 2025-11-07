@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Tuple
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak
@@ -108,7 +108,7 @@ class ReportGenerator:
         
         return table
     
-    def _create_statistics_summary(self, session_data: Dict) -> Paragraph:
+    def _create_statistics_summary(self, session_data: Dict) -> Tuple[Paragraph, Paragraph]:
         """통계 요약"""
         summary = session_data.get("summary", {})
         stats = session_data.get("feedback_stats", {})
@@ -125,7 +125,7 @@ class ReportGenerator:
         
         return heading, content
     
-    def _create_swing_analysis(self, session_data: Dict) -> Table:
+    def _create_swing_analysis(self, session_data: Dict) -> Tuple[Paragraph, Table]:
         """스윙 분석 테이블"""
         swing_phases = session_data.get("swing_phases", {})
         
@@ -151,7 +151,7 @@ class ReportGenerator:
         heading = Paragraph("스윙 단계별 분석", self.styles['CustomHeading'])
         return heading, table
     
-    def _create_improvement_areas(self, session_data: Dict) -> Paragraph:
+    def _create_improvement_areas(self, session_data: Dict) -> Tuple[Paragraph, Paragraph]:
         """개선 영역"""
         summary = session_data.get("summary", {})
         areas = summary.get("improvement_areas", [])
@@ -163,7 +163,7 @@ class ReportGenerator:
         
         return heading, content
     
-    def _create_strengths(self, session_data: Dict) -> Paragraph:
+    def _create_strengths(self, session_data: Dict) -> Tuple[Paragraph, Paragraph]:
         """강점"""
         summary = session_data.get("summary", {})
         strengths = summary.get("strengths", [])

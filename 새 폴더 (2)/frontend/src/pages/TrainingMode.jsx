@@ -12,7 +12,8 @@ function TrainingMode() {
   const [sessionStats, setSessionStats] = useState({
     swingCount: 0,
     averageScore: 0,
-    totalFrames: 0
+    totalFrames: 0,
+    lastSwingPhase: null
   })
   const videoRef = useRef(null)
   const wsRef = useRef(null)
@@ -42,12 +43,23 @@ function TrainingMode() {
         const data = JSON.parse(event.data)
         if (data.type === 'analysis') {
           setFeedback(data.feedback)
-          setSessionStats(prev => ({
-            ...prev,
-            totalFrames: prev.totalFrames + 1,
-            averageScore: (prev.averageScore * prev.totalFrames + (data.feedback.posture_score?.score || 0)) / (prev.totalFrames + 1),
-            swingCount: data.pose_data.swing_phase === 'setup' ? prev.swingCount + 1 : prev.swingCount
-          }))
+          setSessionStats(prev => {
+            const newTotalFrames = prev.totalFrames + 1
+            const currentScore = data.feedback.posture_score?.score || 0
+            const newAverageScore = (prev.averageScore * prev.totalFrames + currentScore) / newTotalFrames
+
+            // 스윙 단계 변화 감지 (이전 단계와 다르고 현재 단계가 'setup'일 때 카운트)
+            const currentPhase = data.pose_data.swing_phase
+            const shouldIncrementSwing = prev.lastSwingPhase && prev.lastSwingPhase !== currentPhase && currentPhase === 'setup'
+
+            return {
+              ...prev,
+              totalFrames: newTotalFrames,
+              averageScore: newAverageScore,
+              swingCount: shouldIncrementSwing ? prev.swingCount + 1 : prev.swingCount,
+              lastSwingPhase: currentPhase
+            }
+          })
         }
       }
 
