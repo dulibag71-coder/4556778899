@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>AI Navigator - 스마트 내비게이션</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 앱 컨테이너 -->
+    <div id="app" class="app-container">
+
+        <!-- 화면 1: 시작 화면 (Splash) -->
+        <div id="screen-splash" class="screen active">
+            <div class="splash-content">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <svg width="80" height="80" viewBox="0 0 80 80">
+                            <circle cx="40" cy="40" r="35" fill="#2196F3" opacity="0.2"/>
+                            <path d="M40 15 L50 30 L65 30 L52 40 L58 55 L40 45 L22 55 L28 40 L15 30 L30 30 Z" fill="#2196F3"/>
+                        </svg>
+                    </div>
+                    <h1 class="app-title">AI Navigator</h1>
+                    <p class="app-subtitle">스마트한 내비게이션 경험</p>
+                </div>
+
+                <div class="vehicle-input-section">
+                    <label class="input-label">차량번호</label>
+                    <input
+                        type="text"
+                        id="vehicle-number"
+                        class="vehicle-input"
+                        placeholder="예: 12가3456"
+                        maxlength="8"
+                    />
+
+                    <button id="btn-enter-vehicle" class="btn btn-primary">
+                        차량번호 입력
+                    </button>
+
+                    <button id="btn-select-vehicle" class="btn btn-secondary">
+                        내 차량 선택
+                    </button>
+                </div>
+
+                <div class="splash-footer">
+                    <p class="version-info">v1.0.0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 화면 2: 지도 화면 (Map) -->
+        <div id="screen-map" class="screen">
+            <!-- 상단 바 -->
+            <div class="top-bar">
+                <button id="btn-back-to-splash" class="btn-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <div class="vehicle-info">
+                    <span class="vehicle-number-display">12가3456</span>
+                    <div class="gps-indicator">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="#4CAF50">
+                            <circle cx="8" cy="8" r="8"/>
+                        </svg>
+                        <span>GPS</span>
+                    </div>
+                </div>
+                <div class="speed-display">
+                    <span class="speed-value">0</span>
+                    <span class="speed-unit">km/h</span>
+                </div>
+            </div>
+
+            <!-- 지도 영역 -->
+            <div id="map" class="map-container"></div>
+
+            <!-- 플로팅 버튼 - 현재 위치 -->
+            <button id="btn-current-location" class="floating-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                    <path d="M12 2V6M12 18V22M2 12H6M18 12H22" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            </button>
+
+            <!-- 하단 카드 -->
+            <div class="bottom-card">
+                <div class="follow-mode-section">
+                    <div class="follow-mode-info">
+                        <h3>따라가기 모드</h3>
+                        <p>차량 위치를 자동으로 추적합니다</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="follow-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <button id="btn-start-navigation" class="btn btn-primary btn-large">
+                    내비게이션 시작
+                </button>
+            </div>
+        </div>
+
+        <!-- 화면 3: 내비게이션 화면 (Navigation) -->
+        <div id="screen-navigation" class="screen">
+            <!-- 상단 바 -->
+            <div class="top-bar">
+                <button id="btn-back-to-map" class="btn-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <h2 class="screen-title">경로 설정</h2>
+                <div></div>
+            </div>
+
+            <!-- 경로 입력 섹션 -->
+            <div class="route-input-section">
+                <div class="location-input-group">
+                    <div class="location-icon start">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="#4CAF50">
+                            <circle cx="10" cy="10" r="6"/>
+                        </svg>
+                    </div>
+                    <div class="location-input-wrapper">
+                        <label class="location-label">출발지</label>
+                        <input
+                            type="text"
+                            id="start-location"
+                            class="location-input"
+                            value="현재 위치"
+                            readonly
+                        />
+                    </div>
+                </div>
+
+                <div class="location-divider"></div>
+
+                <div class="location-input-group">
+                    <div class="location-icon destination">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="#F44336">
+                            <path d="M10 2C7 2 5 4 5 7C5 11 10 18 10 18C10 18 15 11 15 7C15 4 13 2 10 2Z"/>
+                            <circle cx="10" cy="7" r="2" fill="white"/>
+                        </svg>
+                    </div>
+                    <div class="location-input-wrapper">
+                        <label class="location-label">목적지</label>
+                        <input
+                            type="text"
+                            id="destination-location"
+                            class="location-input"
+                            placeholder="목적지를 입력하세요"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <!-- 경로 미리보기 지도 -->
+            <div id="map-preview" class="map-preview"></div>
+
+            <!-- 경로 옵션 -->
+            <div class="route-options">
+                <h3 class="section-title">경로 옵션</h3>
+                <div class="option-buttons">
+                    <button class="option-btn" data-option="shortest">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M3 10H17M17 10L13 6M17 10L13 14" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        최단거리
+                    </button>
+                    <button class="option-btn active" data-option="fastest">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M10 3V7L13 10M10 17C6.13 17 3 13.87 3 10C3 6.13 6.13 3 10 3C13.87 3 17 6.13 17 10C17 13.87 13.87 17 10 17Z" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        최단시간
+                    </button>
+                    <button class="option-btn" data-option="ai">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M10 2L12 8H18L13 12L15 18L10 14L5 18L7 12L2 8H8L10 2Z" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        AI 추천
+                    </button>
+                </div>
+            </div>
+
+            <!-- 경로 정보 카드 -->
+            <div class="route-info-card">
+                <div class="route-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">예상 거리</span>
+                        <span class="stat-value" id="estimated-distance">-</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-label">예상 시간</span>
+                        <span class="stat-value" id="estimated-time">-</span>
+                    </div>
+                </div>
+
+                <button id="btn-calculate-route" class="btn btn-primary btn-large">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 2L12 8H18L13 12L15 18L10 14L5 18L7 12L2 8H8L10 2Z" fill="currentColor"/>
+                    </svg>
+                    AI 경로 계산
+                </button>
+
+                <button id="btn-start-guidance" class="btn btn-secondary btn-large" style="display:none;">
+                    안내 시작
+                </button>
+            </div>
+        </div>
+
+        <!-- 화면 4: 결과 화면 (Summary) -->
+        <div id="screen-summary" class="screen">
+            <div class="summary-content">
+                <div class="success-icon">
+                    <svg width="80" height="80" viewBox="0 0 80 80">
+                        <circle cx="40" cy="40" r="38" fill="#4CAF50" opacity="0.2"/>
+                        <path d="M25 40L35 50L55 30" stroke="#4CAF50" stroke-width="6" stroke-linecap="round" fill="none"/>
+                    </svg>
+                </div>
+
+                <h1 class="summary-title">목적지 도착!</h1>
+                <p class="summary-subtitle">안전 운행 완료하셨습니다</p>
+
+                <!-- 통계 카드들 -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                <path d="M4 16H28M28 16L20 8M28 16L20 24" stroke="#2196F3" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">총 주행 거리</span>
+                            <span class="stat-value" id="total-distance">15.3 km</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                <circle cx="16" cy="16" r="12" stroke="#2196F3" stroke-width="2"/>
+                                <path d="M16 8V16L20 20" stroke="#2196F3" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">총 주행 시간</span>
+                            <span class="stat-value" id="total-time">23분</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                <path d="M16 4V12M16 20V28M4 16H12M20 16H28" stroke="#2196F3" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">평균 속도</span>
+                            <span class="stat-value" id="avg-speed">45 km/h</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                <path d="M16 4L19 14H28L21 20L24 30L16 24L8 30L11 20L4 14H13L16 4Z" stroke="#2196F3" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">AI 예측 정확도</span>
+                            <span class="stat-value" id="ai-accuracy">94%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 액션 버튼들 -->
+                <div class="summary-actions">
+                    <button id="btn-restart" class="btn btn-primary btn-large">
+                        다시 시작
+                    </button>
+                    <button id="btn-home" class="btn btn-secondary btn-large">
+                        홈으로
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 로딩 오버레이 -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">AI 경로 계산 중...</p>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
