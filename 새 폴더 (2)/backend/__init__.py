@@ -1,2 +1,0 @@
-# GolfLink AI Coach Backend
-
