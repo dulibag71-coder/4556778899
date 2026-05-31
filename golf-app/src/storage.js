@@ -1,24 +1,41 @@
 // storage.js
-// localStorage에서 라운드 기록을 저장하고 불러오는 함수 모음이에요.
-// localStorage는 브라우저 안에 있는 작은 저장소예요 — 새로고침해도 사라지지 않아요!
+// localStorage에서 라운드 기록과 스윙 기록을 저장하고 불러오는 함수 모음이에요.
 
-const KEY = 'golf_rounds'; // localStorage에 저장할 때 쓰는 이름표
+const ROUND_KEY = 'golf_rounds'; // 라운드 기록 저장 이름표
+const SWING_KEY = 'golf_swings'; // 스윙 기록 저장 이름표
 
-// 모든 라운드 기록 불러오기
+// ===== 라운드 기록 =====
+
 export function getRounds() {
-  const data = localStorage.getItem(KEY); // 저장소에서 꺼내기
-  return data ? JSON.parse(data) : [];    // 있으면 파싱, 없으면 빈 배열
+  const data = localStorage.getItem(ROUND_KEY);
+  return data ? JSON.parse(data) : [];
 }
 
-// 새 라운드 저장하기
 export function saveRound(round) {
   const rounds = getRounds();
-  rounds.push(round); // 배열 끝에 추가
-  localStorage.setItem(KEY, JSON.stringify(rounds)); // 다시 저장
+  rounds.push(round);
+  localStorage.setItem(ROUND_KEY, JSON.stringify(rounds));
 }
 
-// 특정 라운드 삭제하기 (id로 구분)
 export function deleteRound(id) {
-  const rounds = getRounds().filter(r => r.id !== id); // 해당 id만 빼고 남기기
-  localStorage.setItem(KEY, JSON.stringify(rounds));
+  const rounds = getRounds().filter(r => r.id !== id);
+  localStorage.setItem(ROUND_KEY, JSON.stringify(rounds));
+}
+
+// ===== 스윙 기록 =====
+
+export function getSwings() {
+  const data = localStorage.getItem(SWING_KEY);
+  return data ? JSON.parse(data) : [];
+}
+
+export function saveSwing(swing) {
+  const swings = getSwings();
+  swings.push(swing);
+  localStorage.setItem(SWING_KEY, JSON.stringify(swings));
+}
+
+export function deleteSwing(id) {
+  const swings = getSwings().filter(s => s.id !== id);
+  localStorage.setItem(SWING_KEY, JSON.stringify(swings));
 }
