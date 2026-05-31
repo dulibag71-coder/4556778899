@@ -1,0 +1,357 @@
+/* App.css — 전체 스타일 (디자인)이에요. 초록 골프 테마! */
+
+/* ===== 기본 설정 ===== */
+* {
+  box-sizing: border-box;   /* 패딩이 요소 크기 안에 포함되게 */
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f1f8f1;       /* 연한 초록 배경 */
+  color: #1a1a1a;
+  min-height: 100vh;
+}
+
+/* ===== 전체 앱 레이아웃 ===== */
+.app {
+  max-width: 900px;           /* 너무 넓어지지 않게 */
+  margin: 0 auto;
+  padding: 0 16px 40px;
+}
+
+/* ===== 헤더 ===== */
+.header {
+  background: linear-gradient(135deg, #1b5e20, #2e7d32);  /* 진한 초록 그라데이션 */
+  color: white;
+  text-align: center;
+  padding: 32px 20px 28px;
+  border-radius: 0 0 20px 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(46,125,50,0.3);
+}
+
+.header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.header-sub {
+  margin-top: 6px;
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+
+/* ===== 통계 카드들 ===== */
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);  /* 3칸 균등 분배 */
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+/* 카드 하나 */
+.stat-card {
+  background: white;
+  border-radius: 14px;
+  padding: 20px 16px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-top: 4px solid #4caf50;   /* 위쪽 초록 포인트 선 */
+  transition: transform 0.15s;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);  /* 마우스 올리면 살짝 위로 */
+}
+
+.stat-title {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1b5e20;  /* 진한 초록 */
+}
+
+.stat-unit {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #555;
+  margin-left: 3px;
+}
+
+/* ===== 그래프 영역 ===== */
+.chart-container {
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2e7d32;
+  margin-bottom: 16px;
+}
+
+/* 그래프 툴팁 (마우스 올렸을 때) */
+.chart-tooltip {
+  background: white;
+  border: 1px solid #c8e6c9;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  line-height: 1.6;
+}
+
+/* ===== 새 라운드 버튼 ===== */
+.add-button-wrap {
+  margin-bottom: 20px;
+}
+
+.btn-add {
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  box-shadow: 0 3px 10px rgba(46,125,50,0.35);
+}
+
+.btn-add:hover {
+  background: #1b5e20;
+  transform: translateY(-1px);
+}
+
+.btn-add:active {
+  transform: translateY(0);
+}
+
+/* ===== 빈 상태 ===== */
+.empty-state {
+  background: white;
+  border-radius: 14px;
+  padding: 48px 20px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  color: #555;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.empty-state > p:nth-child(2) {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.empty-sub {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+/* ===== 기록 표 ===== */
+.table-container {
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.table-scroll {
+  overflow-x: auto;  /* 모바일에서 가로 스크롤 */
+}
+
+.round-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  min-width: 500px;    /* 너무 작아지지 않게 최소 너비 */
+}
+
+.round-table th {
+  background: #e8f5e9;       /* 연한 초록 헤더 */
+  color: #2e7d32;
+  font-weight: 600;
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 2px solid #c8e6c9;
+}
+
+.round-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #333;
+}
+
+/* 짝수 행 배경색 */
+.round-table tbody tr:nth-child(even) td {
+  background: #fafff9;
+}
+
+.round-table tbody tr:hover td {
+  background: #f1f8f1;
+}
+
+/* 타수 셀은 굵게 */
+.score-cell {
+  font-weight: 700;
+  color: #1b5e20 !important;
+}
+
+/* 삭제 버튼 */
+.btn-delete {
+  background: none;
+  border: 1px solid #ef9a9a;
+  color: #c62828;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-delete:hover {
+  background: #ffebee;
+}
+
+/* ===== 입력 폼 모달 ===== */
+/* 배경 어둡게 */
+.form-overlay {
+  position: fixed;
+  inset: 0;                              /* 화면 전체 덮기 */
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.form-box {
+  background: white;
+  border-radius: 16px;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+
+.form-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1b5e20;
+  margin-bottom: 20px;
+}
+
+/* 폼 안 label + input 쌍 */
+.form-box label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 4px;
+  margin-top: 14px;
+}
+
+.form-box label:first-of-type {
+  margin-top: 0;
+}
+
+.form-box input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid #c8e6c9;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-box input:focus {
+  border-color: #2e7d32;   /* 클릭하면 초록 테두리 */
+}
+
+.form-error {
+  color: #c62828;
+  font-size: 0.85rem;
+  margin-top: 12px;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-save {
+  flex: 1;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 11px;
+  border-radius: 9px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-save:hover {
+  background: #1b5e20;
+}
+
+.btn-cancel {
+  flex: 1;
+  background: none;
+  color: #666;
+  border: 1.5px solid #ccc;
+  padding: 11px;
+  border-radius: 9px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-cancel:hover {
+  background: #f5f5f5;
+}
+
+/* ===== 모바일 반응형 ===== */
+@media (max-width: 480px) {
+  .header h1 { font-size: 1.5rem; }
+
+  /* 모바일에서는 카드를 1열로 */
+  .stats-section {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+    padding: 14px 16px;
+  }
+
+  .stat-value { font-size: 1.6rem; }
+}
